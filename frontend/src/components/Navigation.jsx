@@ -1,31 +1,31 @@
 import React from "react";
+import { Link } from "react-router-dom";
+import AuthUser from "../pages/AuthUser";
+
+import Container from "react-bootstrap/Container";
+import Nav from "react-bootstrap/Nav";
+import Navbar from "react-bootstrap/Navbar";
 
 export default Navigation = () => {
+  const { logout } = AuthUser();
   return (
-    <nav className="navbar navbar-expand-lg bg-body-tertiary">
-      <div className="container-fluid">
-        <a className="navbar-brand" href="#">
-          TodoList
-        </a>
-        <button
-          className="navbar-toggler"
-          type="button"
-          data-bs-toggle="collapse"
-          data-bs-target="#navbarNavAltMarkup"
-          aria-controls="navbarNavAltMarkup"
-          aria-expanded="false"
-          aria-label="Toggle navigation"
-        >
-          <span className="navbar-toggler-icon"></span>
-        </button>
-        <div className="collapse navbar-collapse" id="navbarNavAltMarkup">
-          <div className="navbar-nav ms-auto">
-            <a className="nav-link" href="#">
+    <Navbar collapseOnSelect expand="lg">
+      <Container>
+        <Navbar.Brand href="#home">Todo Lists</Navbar.Brand>
+        <Navbar.Toggle aria-controls="responsive-navbar-nav" />
+        <Navbar.Collapse id="responsive-navbar-nav">
+          <Nav className="me-auto">
+            <Link className="nav-link" to="/">
+              Home
+            </Link>
+          </Nav>
+          <Nav>
+            <Link className="nav-link" onClick={logout}>
               Logout
-            </a>
-          </div>
-        </div>
-      </div>
-    </nav>
+            </Link>
+          </Nav>
+        </Navbar.Collapse>
+      </Container>
+    </Navbar>
   );
 };

@@ -1,35 +1,35 @@
-import axios from "axios";
 import React, { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { Navigate } from "react-router-dom";
+import AuthUser from "../AuthUser";
 
 import { Box, Grid, TextField, Button } from "@mui/material";
 import LockOutlinedIcon from "@mui/icons-material/LockOutlined";
 import { Avatar, Typography, Link, IconButton } from "@mui/material";
 import { VisibilityOffRounded, VisibilityRounded } from "@mui/icons-material";
 
-const Login = (props) => {
-  const [username, setUsername] = useState("");
-  const [password, setPassword] = useState("");
+const Login = () => {
+  const [username, setUsername] = React.useState("");
+  const [password, setPassword] = React.useState("");
   const [togglePassword, setTogglePassword] = useState(false);
-  const navigate = useNavigate();
 
-  const submit = async (e) => {
+  const token = localStorage.getItem("token");
+
+  const { http, setToken, isValidToken } = AuthUser();
+
+  const handleSubmit = async (e) => {
     e.preventDefault();
-
-    const response = await axios.post(
-      "http://localhost:8000/login/",
-      {
-        username,
-        password,
-      },
-      {
-        headers: { "Content-Type": "application/json" },
-        withCredentials: true,
-      }
-    );
-    const content = await response.data;
-    navigate("/notes");
+    try {
+      const response = await http.post("/login", { username, password });
+      setToken(response.data.token);
+    } catch (error) {
+      console.log(error.response.data);
+      setError(error.response.data.detail);
+    }
   };
+
+  if (isValidToken(token)) {
+    return <Navigate to="/" />;
+  }
 
   return (
     <Grid container component="main" columns={12} sx={{ height: "100vh" }}>
@@ -65,7 +65,12 @@ const Login = (props) => {
           <Typography component="h1" variant="h5">
             Sign in
           </Typography>
-          <Box component="form" noValidate onSubmit={submit} sx={{ mt: 1 }}>
+          <Box
+            component="form"
+            noValidate
+            onSubmit={handleSubmit}
+            sx={{ mt: 1 }}
+          >
             <TextField
               margin="normal"
               required

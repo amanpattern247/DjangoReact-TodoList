@@ -3,7 +3,8 @@ import App from "./App.jsx";
 import ReactDOM from "react-dom/client";
 import { BrowserRouter } from "react-router-dom";
 import { ThemeProvider, CssBaseline } from "@mui/material";
-import { createTheme } from "@mui/material/styles";
+
+import { createTheme } from "@mui/material";
 
 const theme = createTheme();
 

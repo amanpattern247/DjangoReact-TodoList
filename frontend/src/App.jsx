@@ -1,36 +1,23 @@
-import React, { useEffect, useState } from "react";
-import axios from "axios";
-import { Routes, Route } from "react-router-dom";
+import React from "react";
+import { Route, Routes } from "react-router-dom";
+import "bootstrap/dist/css/bootstrap.min.css";
 
-import Login from "./pages/users/Login";
+import Home from "./pages/home/home";
+import Login from "./pages/users/login";
 import GetTodoList from "./pages/todolist/GetTodoList";
+import PrivateRoute from "./components/PrivateRoute";
+import UpdateTodoList from "./pages/todolist/UpdateTodoList";
 
 function App() {
-  // const [name, setName] = useState("");
-
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const response = await axios.get("http://localhost:8000/user/", {
-          withCredentials: true,
-        });
-
-        const content = response.data;
-        console.log(content);
-
-        // setName(content.name);
-      } catch (error) {
-        console.log(error);
-      }
-    };
-
-    fetchData();
-  }, []);
-
   return (
     <Routes>
-      <Route index Component={Login} />
-      <Route path="/notes" Component={GetTodoList} />
+      <Route path="/" element={<PrivateRoute />}>
+        <Route index element={<Home />} />
+        <Route path="/notes" element={<GetTodoList />} />
+        <Route path="/notes/update/:id" element={<UpdateTodoList />} />
+      </Route>
+      <Route path="/login" element={<Login />} />
+      <Route path="*" element={<h1>Not Found</h1>} />
     </Routes>
   );
 }
