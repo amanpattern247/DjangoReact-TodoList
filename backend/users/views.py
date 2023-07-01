@@ -1,4 +1,5 @@
-import jwt, datetime
+import jwt
+import datetime
 from django.contrib import auth
 from django.http import HttpResponse
 from rest_framework.views import APIView

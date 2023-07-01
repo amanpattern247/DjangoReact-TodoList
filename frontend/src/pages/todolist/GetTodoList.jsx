@@ -3,22 +3,24 @@ import React, { useState, useEffect } from "react";
 
 import Paper from "@mui/material/Paper";
 import DrawIcon from "@mui/icons-material/Draw";
+import AddBoxIcon from "@mui/icons-material/AddBox";
 import DeleteForeverIcon from "@mui/icons-material/DeleteForever";
 
 import { Stack, Table, TableBody, TableCell } from "@mui/material";
 import { TableContainer, TableHead, TableRow } from "@mui/material";
 
-import { toast } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css";
-
 import AuthUser from "../AuthUser";
 import Navigation from "../../components/navigation";
-import DialogBox from "../../components/DialogBox";
+import AddTodoList from "./AddTodoList";
+import DeleteTodoList from "./DeleteTodoList";
+import UpdateTodoList from "./UpdateTodoList";
 
 const GetTodoList = () => {
   const { http } = AuthUser();
   const [notes, setNotes] = useState([]);
+  const [addNoteId, setAddNoteId] = useState(false);
   const [deleteNoteId, setDeleteNoteId] = useState(null);
+  const [updateNoteId, setUpdateNoteId] = useState(null);
 
   const getNotes = async () => {
     try {
@@ -36,17 +38,16 @@ const GetTodoList = () => {
     getNotes();
   }, []);
 
-  const handleDeleteNote = async (id) => {
-    try {
-      const response = await http.delete(`/todo/delete/${id}`);
-      if (response.data) {
-        setDeleteNoteId(null);
-        getNotes();
-        toast.success("List Deleted Successfully!");
-      }
-    } catch (error) {
-      toast.error("List Deletion Failed!");
-    }
+  const handleAddNote = () => {
+    setAddNoteId(true);
+  };
+
+  const handleDeleteNote = (id) => {
+    setDeleteNoteId(id);
+  };
+
+  const handleUpdateNote = (id) => {
+    setUpdateNoteId(id);
   };
 
   return (
@@ -54,16 +55,20 @@ const GetTodoList = () => {
       <Navigation />
       <div className="note-list">
         <TableContainer component={Paper} elevation={0} variant="outlined">
-          <Table sx={{ minWidth: 650 }} aria-label="simple table">
-            <TableHead>
-              <TableRow>
-                <TableCell>#</TableCell>
+          <Table sx={{ minWidth: 650 }} aria-label="customized table">
+            <TableHead className="">
+              <TableRow style={{ fontSize: 30 }}>
+                <TableCell>
+                  <Link onClick={handleAddNote}>
+                    <AddBoxIcon />
+                  </Link>
+                </TableCell>
                 <TableCell>Title</TableCell>
                 <TableCell>Description</TableCell>
                 <TableCell>Completed</TableCell>
                 <TableCell>Created At</TableCell>
                 <TableCell>Updated At</TableCell>
-                <TableCell>Action</TableCell>
+                <TableCell>Actions</TableCell>
               </TableRow>
             </TableHead>
             <TableBody>
@@ -83,10 +88,10 @@ const GetTodoList = () => {
                   </TableCell>
                   <TableCell>
                     <Stack direction="row" spacing={1}>
-                      <Link to={`/notes/update/${note.id}`}>
+                      <Link onClick={() => handleUpdateNote(note.id)}>
                         <DrawIcon />
                       </Link>
-                      <Link onClick={() => setDeleteNoteId(note.id)}>
+                      <Link onClick={() => handleDeleteNote(note.id)}>
                         <DeleteForeverIcon />
                       </Link>
                     </Stack>
@@ -97,11 +102,21 @@ const GetTodoList = () => {
           </Table>
         </TableContainer>
       </div>
+      {addNoteId && (
+        <AddTodoList getNotes={getNotes} setAddNoteId={setAddNoteId} />
+      )}
       {deleteNoteId && (
-        <DialogBox
+        <DeleteTodoList
           noteId={deleteNoteId}
-          handleDeleteNote={handleDeleteNote}
           setDeleteNoteId={setDeleteNoteId}
+          getNotes={getNotes}
+        />
+      )}
+      {updateNoteId && (
+        <UpdateTodoList
+          noteId={updateNoteId}
+          setUpdateNoteId={setUpdateNoteId}
+          getNotes={getNotes}
         />
       )}
     </div>

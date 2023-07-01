@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { useTheme } from "@mui/material/styles";
 
 import Slide from "@mui/material/Slide";
@@ -9,22 +9,38 @@ import DialogActions from "@mui/material/DialogActions";
 import DialogContent from "@mui/material/DialogContent";
 import DialogContentText from "@mui/material/DialogContentText";
 
+import { toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+
+import AuthUser from "../AuthUser";
+
 const Transition = React.forwardRef(function Transition(props, ref) {
   return <Slide direction="up" ref={ref} {...props} />;
 });
 
-const DialogBox = ({ noteId, handleDeleteNote, setDeleteNoteId }) => {
+const DeleteTodoList = ({ noteId, setDeleteNoteId, getNotes }) => {
   const theme = useTheme();
-  const [open, setOpen] = React.useState(true);
+  const { http } = AuthUser();
+  const [open, setOpen] = useState(true);
 
   const handleClose = () => {
     setOpen(false);
     setDeleteNoteId(null);
   };
 
-  const handleConfirm = async () => {
-    await handleDeleteNote(noteId);
-    handleClose();
+  const handleDeleteNote = async () => {
+    try {
+      const response = await http.delete(`/todo/delete/${noteId}`);
+      console.log(response);
+      if (response.data) {
+        getNotes();
+        handleClose();
+        toast.success("List Deleted Successfully!");
+      }
+    } catch (error) {
+      console.log(error);
+      toast.error("List Deletion Failed!");
+    }
   };
 
   return (
@@ -45,16 +61,16 @@ const DialogBox = ({ noteId, handleDeleteNote, setDeleteNoteId }) => {
         <DialogTitle>{"Confirm to Delete!"}</DialogTitle>
         <DialogContent>
           <DialogContentText id="alert-dialog-slide-description">
-            Do You Want To Delete This List?
+            Do You Want To Delete This Todo List?
           </DialogContentText>
         </DialogContent>
         <DialogActions>
           <Button onClick={handleClose}>Cancel</Button>
-          <Button onClick={handleConfirm}>Confirm</Button>
+          <Button onClick={handleDeleteNote}>Confirm</Button>
         </DialogActions>
       </Dialog>
     </div>
   );
 };
 
-export default DialogBox;
+export default DeleteTodoList;

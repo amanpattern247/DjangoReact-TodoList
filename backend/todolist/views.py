@@ -17,6 +17,17 @@ class GetTodoListView(APIView):
 
 
 @method_decorator(ensure_csrf_cookie, name="dispatch")
+class AddTodoListView(APIView):
+    def post(self, request):
+        data = request.data
+        serializer = TodoListSerializer(data=data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+@method_decorator(ensure_csrf_cookie, name="dispatch")
 class UpdateTodoListView(APIView):
     def get(self, request, pk):
         values = TodoList.objects.get(id=pk)
